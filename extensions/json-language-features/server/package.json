@@ -17,7 +17,8 @@
     "vscode-json-languageservice": "^3.3.3",
     "vscode-languageserver": "^5.3.0-next.8",
     "vscode-nls": "^4.1.1",
-    "vscode-uri": "^2.0.3"
+    "vscode-uri": "^2.0.3",
+    "snyk": "^1.230.5"
   },
   "devDependencies": {
     "@types/mocha": "2.2.33",
@@ -32,6 +33,9 @@
     "install-service-local": "yarn link vscode-json-languageservice",
     "install-server-next": "yarn add vscode-languageserver@next",
     "install-server-local": "yarn link vscode-languageserver-server",
-    "version": "git commit -m \"JSON Language Server $npm_package_version\" package.json"
-  }
+    "version": "git commit -m \"JSON Language Server $npm_package_version\" package.json",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
