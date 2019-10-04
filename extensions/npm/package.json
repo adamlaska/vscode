@@ -15,13 +15,16 @@
   ],
   "scripts": {
     "compile": "gulp compile-extension:npm",
-    "watch": "gulp watch-extension:npm"
+    "watch": "gulp watch-extension:npm",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "jsonc-parser": "^2.1.1",
     "minimatch": "^3.0.4",
     "request-light": "^0.2.4",
-    "vscode-nls": "^4.0.0"
+    "vscode-nls": "^4.0.0",
+    "snyk": "^1.230.5"
   },
   "devDependencies": {
     "@types/minimatch": "^3.0.3",
@@ -271,5 +274,6 @@
         }
       }
     ]
-  }
+  },
+  "snyk": true
 }
