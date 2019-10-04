@@ -25,7 +25,9 @@
     "download-builtin-extensions": "node build/lib/builtInExtensions.js",
     "monaco-compile-check": "tsc -p src/tsconfig.monaco.json --noEmit",
     "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization",
-    "update-distro": "node build/npm/update-distro.js"
+    "update-distro": "node build/npm/update-distro.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "@microsoft/applicationinsights-web": "^2.1.1",
@@ -56,7 +58,8 @@
     "xterm-addon-search": "0.2.0-beta5",
     "xterm-addon-web-links": "0.1.0-beta10",
     "yauzl": "^2.9.2",
-    "yazl": "^2.4.3"
+    "yazl": "^2.4.3",
+    "snyk": "^1.230.5"
   },
   "devDependencies": {
     "7zip": "0.0.6",
@@ -151,5 +154,6 @@
     "windows-foreground-love": "0.2.0",
     "windows-mutex": "0.3.0",
     "windows-process-tree": "0.2.4"
-  }
+  },
+  "snyk": true
 }
