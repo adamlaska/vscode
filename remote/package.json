@@ -25,10 +25,16 @@
     "xterm-addon-search": "0.2.0-beta5",
     "xterm-addon-web-links": "0.1.0-beta10",
     "yauzl": "^2.9.2",
-    "yazl": "^2.4.3"
+    "yazl": "^2.4.3",
+    "snyk": "^1.230.5"
   },
   "optionalDependencies": {
     "vscode-windows-ca-certs": "0.1.0",
     "vscode-windows-registry": "1.0.2"
-  }
+  },
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
