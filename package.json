@@ -25,7 +25,9 @@
     "download-builtin-extensions": "node build/lib/builtInExtensions.js",
     "monaco-compile-check": "tsc -p src/tsconfig.monaco.json --noEmit",
     "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization",
-    "update-distro": "node build/npm/update-distro.js"
+    "update-distro": "node build/npm/update-distro.js",
+    "prepare": "yarn run snyk-protect",
+    "snyk-protect": "snyk-protect"
   },
   "dependencies": {
     "@microsoft/applicationinsights-web": "^2.1.1",
@@ -56,7 +58,8 @@
     "xterm-addon-search": "0.2.0-beta5",
     "xterm-addon-web-links": "0.1.0-beta10",
     "yauzl": "^2.9.2",
-    "yazl": "^2.4.3"
+    "yazl": "^2.4.3",
+    "@snyk/protect": "latest"
   },
   "devDependencies": {
     "7zip": "0.0.6",
@@ -71,8 +74,8 @@
     "ansi-colors": "^3.2.3",
     "asar": "^0.14.0",
     "chromium-pickle-js": "^0.2.0",
-    "copy-webpack-plugin": "^4.5.2",
-    "coveralls": "^2.11.11",
+    "copy-webpack-plugin": "^5.1.2",
+    "coveralls": "^3.0.0",
     "cson-parser": "^1.3.3",
     "debounce": "^1.0.0",
     "documentdb": "^1.5.1",
@@ -93,7 +96,7 @@
     "gulp-gunzip": "^1.0.0",
     "gulp-json-editor": "^2.5.0",
     "gulp-plumber": "^1.2.0",
-    "gulp-remote-retry-src": "^0.6.0",
+    "gulp-remote-retry-src": "^0.8.0",
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.5.4",
     "gulp-shell": "^0.6.5",
@@ -107,14 +110,14 @@
     "istanbul-lib-instrument": "^3.3.0",
     "istanbul-lib-report": "^2.0.8",
     "istanbul-lib-source-maps": "^3.0.6",
-    "istanbul-reports": "^2.2.6",
+    "istanbul-reports": "^3.1.3",
     "jsdom-no-contextify": "^3.1.0",
     "lazy.js": "^0.4.2",
     "merge-options": "^1.0.1",
     "mime": "^1.4.1",
     "minimatch": "^3.0.4",
-    "mkdirp": "^0.5.0",
-    "mocha": "^2.2.5",
+    "mkdirp": "^0.5.2",
+    "mocha": "^6.2.3",
     "mocha-junit-reporter": "^1.17.0",
     "opn": "^6.0.0",
     "optimist": "0.3.5",
@@ -129,13 +132,13 @@
     "tslint": "^5.16.0",
     "typescript": "3.6",
     "typescript-formatter": "7.1.0",
-    "underscore": "^1.8.2",
+    "underscore": "^1.12.1",
     "vinyl": "^2.0.0",
     "vinyl-fs": "^3.0.0",
-    "vsce": "1.48.0",
+    "vsce": "2.6.4",
     "vscode-debugprotocol": "1.36.0",
     "vscode-nls-dev": "^3.3.1",
-    "webpack": "^4.16.5",
+    "webpack": "^4.26.0",
     "webpack-stream": "^5.1.1"
   },
   "repository": {
@@ -151,5 +154,6 @@
     "windows-foreground-love": "0.2.0",
     "windows-mutex": "0.3.0",
     "windows-process-tree": "0.2.4"
-  }
+  },
+  "snyk": true
 }
