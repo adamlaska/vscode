@@ -1,0 +1,33 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.0
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:extend:20180424':
+    - request > extend:
+        patched: '2022-08-14T19:46:39.545Z'
+    - azure-storage > request > extend:
+        patched: '2022-08-14T19:46:39.545Z'
+    - github-releases > request > extend:
+        patched: '2022-08-14T19:46:39.545Z'
+  'npm:hoek:20180212':
+    - github-releases > request > hawk > hoek:
+        patched: '2022-08-14T19:46:39.545Z'
+    - github-releases > request > hawk > boom > hoek:
+        patched: '2022-08-14T19:46:39.545Z'
+    - github-releases > request > hawk > sntp > hoek:
+        patched: '2022-08-14T19:46:39.545Z'
+    - github-releases > request > hawk > cryptiles > boom > hoek:
+        patched: '2022-08-14T19:46:39.545Z'
+  SNYK-JS-LODASH-567746:
+    - vsce > lodash:
+        patched: '2022-08-14T19:46:39.545Z'
+    - vsce > cheerio > lodash:
+        patched: '2022-08-14T19:46:39.545Z'
+  'npm:stringstream:20180511':
+    - request > stringstream:
+        patched: '2022-08-14T19:46:39.545Z'
+    - azure-storage > request > stringstream:
+        patched: '2022-08-14T19:46:39.545Z'
+    - github-releases > request > stringstream:
+        patched: '2022-08-14T19:46:39.545Z'
