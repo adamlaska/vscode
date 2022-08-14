@@ -1,0 +1,77 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.0
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:extend:20180424':
+    - jsdom-no-contextify > request > extend:
+        patched: '2022-08-14T03:50:42.704Z'
+    - coveralls > request > extend:
+        patched: '2022-08-14T03:50:42.704Z'
+    - vinyl-fs > glob-stream > extend:
+        patched: '2022-08-14T03:50:42.704Z'
+    - asar > mksnapshot > request > extend:
+        patched: '2022-08-14T03:50:42.704Z'
+    - gulp > gulp-cli > liftoff > extend:
+        patched: '2022-08-14T03:50:42.704Z'
+    - gulp > vinyl-fs > glob-stream > extend:
+        patched: '2022-08-14T03:50:42.704Z'
+    - gulp-vinyl-zip > vinyl-fs > glob-stream > extend:
+        patched: '2022-08-14T03:50:42.704Z'
+    - gulp-atom-electron > vinyl-fs > glob-stream > extend:
+        patched: '2022-08-14T03:50:42.704Z'
+    - gulp-azure-storage > vinyl-fs > glob-stream > extend:
+        patched: '2022-08-14T03:50:42.704Z'
+    - gulp-atom-electron > gulp-vinyl-zip > vinyl-fs > glob-stream > extend:
+        patched: '2022-08-14T03:50:42.704Z'
+    - gulp-atom-electron > gulp-symdest > vinyl-fs > glob-stream > extend:
+        patched: '2022-08-14T03:50:42.704Z'
+  'npm:hoek:20180212':
+    - jsdom-no-contextify > request > hawk > hoek:
+        patched: '2022-08-14T03:50:42.704Z'
+    - jsdom-no-contextify > request > hawk > boom > hoek:
+        patched: '2022-08-14T03:50:42.704Z'
+    - jsdom-no-contextify > request > hawk > sntp > hoek:
+        patched: '2022-08-14T03:50:42.704Z'
+    - asar > mksnapshot > request > hawk > hoek:
+        patched: '2022-08-14T03:50:42.704Z'
+    - asar > mksnapshot > request > hawk > boom > hoek:
+        patched: '2022-08-14T03:50:42.704Z'
+    - jsdom-no-contextify > request > hawk > cryptiles > boom > hoek:
+        patched: '2022-08-14T03:50:42.704Z'
+    - asar > mksnapshot > request > hawk > sntp > hoek:
+        patched: '2022-08-14T03:50:42.704Z'
+    - asar > mksnapshot > request > hawk > cryptiles > boom > hoek:
+        patched: '2022-08-14T03:50:42.704Z'
+  SNYK-JS-LODASH-567746:
+    - gulp-shell > lodash:
+        patched: '2022-08-14T03:50:42.704Z'
+    - gulp-eslint > eslint > lodash:
+        patched: '2022-08-14T03:50:42.704Z'
+    - istanbul-lib-instrument > @babel/traverse > lodash:
+        patched: '2022-08-14T03:50:42.704Z'
+    - gulp-eslint > eslint > inquirer > lodash:
+        patched: '2022-08-14T03:50:42.704Z'
+    - gulp-eslint > eslint > table > lodash:
+        patched: '2022-08-14T03:50:42.704Z'
+    - istanbul-lib-instrument > @babel/traverse > @babel/generator > lodash:
+        patched: '2022-08-14T03:50:42.704Z'
+    - istanbul-lib-instrument > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash:
+        patched: '2022-08-14T03:50:42.704Z'
+    - istanbul-lib-instrument > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash:
+        patched: '2022-08-14T03:50:42.704Z'
+    - vsce > lodash:
+        patched: '2022-08-14T03:50:42.704Z'
+    - gulp-remote-retry-src > requestretry > lodash:
+        patched: '2022-08-14T03:50:42.704Z'
+    - gulp-shell > async > lodash:
+        patched: '2022-08-14T03:50:42.704Z'
+    - vsce > cheerio > lodash:
+        patched: '2022-08-14T03:50:42.704Z'
+  'npm:stringstream:20180511':
+    - jsdom-no-contextify > request > stringstream:
+        patched: '2022-08-14T03:50:42.704Z'
+    - coveralls > request > stringstream:
+        patched: '2022-08-14T03:50:42.704Z'
+    - asar > mksnapshot > request > stringstream:
+        patched: '2022-08-14T03:50:42.704Z'
