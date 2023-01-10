@@ -51,6 +51,12 @@
     "compile": "tsc -p tsconfig.build.json",
     "watch": "tsc -p tsconfig.build.json --watch",
     "postinstall": "npm run compile",
-    "npmCheckJs": "tsc --noEmit"
+    "npmCheckJs": "tsc --noEmit",
+    "prepare": "yarn run snyk-protect",
+    "snyk-protect": "snyk-protect"
+  },
+  "snyk": true,
+  "dependencies": {
+    "@snyk/protect": "latest"
   }
 }
