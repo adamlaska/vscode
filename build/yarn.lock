@@ -39,6 +39,11 @@
     "@nodelib/fs.scandir" "2.1.1"
     fastq "^1.6.0"
 
+"@snyk/protect@^1.1082.0":
+  version "1.1082.0"
+  resolved "https://registry.yarnpkg.com/@snyk/protect/-/protect-1.1082.0.tgz#447b3ab3c67df82a5023854a2da3908afb17f066"
+  integrity sha512-Pveb0imdiKl3BH3yyPyIhD9uI8kldgGjw1UzY47smYEjgjdkSmYpYMTrL/WBrv7cRza6IqM5MoQ99Fn+3edUHQ==
+
 "@types/ansi-colors@^3.2.0":
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@types/ansi-colors/-/ansi-colors-3.2.0.tgz#3e4fe85d9131ce1c6994f3040bd0b25306c16a6e"
