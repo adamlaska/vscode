@@ -131,7 +131,7 @@
     "typescript-formatter": "7.1.0",
     "underscore": "^1.8.2",
     "vinyl": "^2.0.0",
-    "vinyl-fs": "^3.0.0",
+    "vinyl-fs": "^4.0.0",
     "vsce": "1.48.0",
     "vscode-debugprotocol": "1.36.0",
     "vscode-nls-dev": "^3.3.1",
