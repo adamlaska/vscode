@@ -22,7 +22,7 @@
 	"main": "./out/extension",
 	"devDependencies": {
 		"@types/node": "^10.14.8",
-		"vscode": "1.1.5"
+		"vscode": "1.1.31"
 	},
 	"contributes": {
 		"resourceLabelFormatters": [
