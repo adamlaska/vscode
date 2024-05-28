@@ -30,7 +30,7 @@
     "@types/underscore": "^1.8.9",
     "@types/xml2js": "0.0.33",
     "applicationinsights": "1.0.8",
-    "azure-storage": "^2.1.0",
+    "azure-storage": "^2.10.7",
     "documentdb": "1.13.0",
     "github-releases": "^0.4.1",
     "gulp-bom": "^1.0.0",
