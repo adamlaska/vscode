@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@snyk/protect@^1.1292.2":
+  version "1.1292.2"
+  resolved "https://registry.yarnpkg.com/@snyk/protect/-/protect-1.1292.2.tgz#45b42c67c25cea01533c84a5833bc90513a97906"
+  integrity sha512-8qPdZqB7efG6I82uO5FAJuPoAGsjtQ8vWsbFOiQFZmQKUtTn5/bU1qoOYOLPXTDCCxsN6n0AzlDRd8DenX9Uew==
+
 "@types/mocha@2.2.33":
   version "2.2.33"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.33.tgz#d79a0061ec270379f4d9e225f4096fb436669def"
