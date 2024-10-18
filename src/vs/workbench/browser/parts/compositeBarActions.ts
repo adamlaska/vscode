@@ -3,29 +3,30 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { localize } from 'vs/nls';
-import { Action, IAction, Separator } from 'vs/base/common/actions';
-import { $, addDisposableListener, append, clearNode, EventHelper, EventType, getDomNodePagePosition, hide, show } from 'vs/base/browser/dom';
-import { ICommandService } from 'vs/platform/commands/common/commands';
-import { toDisposable, DisposableStore, disposeIfDisposable, MutableDisposable } from 'vs/base/common/lifecycle';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
-import { TextBadge, NumberBadge, IBadge, IActivity, IconBadge, ProgressBadge } from 'vs/workbench/services/activity/common/activity';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DelayedDragHandler } from 'vs/base/browser/dnd';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { Emitter, Event } from 'vs/base/common/event';
-import { CompositeDragAndDropObserver, ICompositeDragAndDrop, Before2D, toggleDropEffect } from 'vs/workbench/browser/dnd';
-import { Color } from 'vs/base/common/color';
-import { BaseActionViewItem, IActionViewItemOptions } from 'vs/base/browser/ui/actionbar/actionViewItems';
-import { Codicon } from 'vs/base/common/codicons';
-import { ThemeIcon } from 'vs/base/common/themables';
-import { IHoverService, IHoverWidget } from 'vs/workbench/services/hover/browser/hover';
-import { RunOnceScheduler } from 'vs/base/common/async';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { HoverPosition } from 'vs/base/browser/ui/hover/hoverWidget';
-import { URI } from 'vs/base/common/uri';
-import { badgeBackground, badgeForeground, contrastBorder } from 'vs/platform/theme/common/colorRegistry';
+import { localize } from '../../../nls.js';
+import { Action, IAction, Separator } from '../../../base/common/actions.js';
+import { $, addDisposableListener, append, clearNode, EventHelper, EventType, getDomNodePagePosition, hide, show } from '../../../base/browser/dom.js';
+import { ICommandService } from '../../../platform/commands/common/commands.js';
+import { toDisposable, DisposableStore, MutableDisposable } from '../../../base/common/lifecycle.js';
+import { IContextMenuService } from '../../../platform/contextview/browser/contextView.js';
+import { IThemeService, IColorTheme } from '../../../platform/theme/common/themeService.js';
+import { NumberBadge, IBadge, IActivity, ProgressBadge, IconBadge } from '../../services/activity/common/activity.js';
+import { IInstantiationService } from '../../../platform/instantiation/common/instantiation.js';
+import { DelayedDragHandler } from '../../../base/browser/dnd.js';
+import { IKeybindingService } from '../../../platform/keybinding/common/keybinding.js';
+import { Emitter, Event } from '../../../base/common/event.js';
+import { CompositeDragAndDropObserver, ICompositeDragAndDrop, Before2D, toggleDropEffect } from '../dnd.js';
+import { Color } from '../../../base/common/color.js';
+import { BaseActionViewItem, IActionViewItemOptions } from '../../../base/browser/ui/actionbar/actionViewItems.js';
+import { Codicon } from '../../../base/common/codicons.js';
+import { ThemeIcon } from '../../../base/common/themables.js';
+import { IHoverService } from '../../../platform/hover/browser/hover.js';
+import { RunOnceScheduler } from '../../../base/common/async.js';
+import { IConfigurationService } from '../../../platform/configuration/common/configuration.js';
+import { HoverPosition } from '../../../base/browser/ui/hover/hoverWidget.js';
+import { URI } from '../../../base/common/uri.js';
+import { badgeBackground, badgeForeground, contrastBorder } from '../../../platform/theme/common/colorRegistry.js';
+import type { IHoverWidget } from '../../../base/browser/ui/hover/hover.js';
 
 export interface ICompositeBar {
 
@@ -43,6 +44,11 @@ export interface ICompositeBar {
 	 * Find out if a composite is pinned in the composite bar.
 	 */
 	isPinned(compositeId: string): boolean;
+
+	/**
+	 * Get pinned composite ids in the composite bar.
+	 */
+	getPinnedCompositeIds(): string[];
 
 	/**
 	 * Returns if badges are enabled for that specified composite.
@@ -143,7 +149,7 @@ export interface ICompositeBarActionViewItemOptions extends IActionViewItemOptio
 	readonly compact?: boolean;
 }
 
-export class CompoisteBarActionViewItem extends BaseActionViewItem {
+export class CompositeBarActionViewItem extends BaseActionViewItem {
 
 	private static hoverLeaveTime = 0;
 
@@ -153,7 +159,7 @@ export class CompoisteBarActionViewItem extends BaseActionViewItem {
 	protected override readonly options: ICompositeBarActionViewItemOptions;
 
 	private badgeContent: HTMLElement | undefined;
-	private readonly badgeDisposable = this._register(new MutableDisposable());
+	private readonly badgeDisposable = this._register(new MutableDisposable<DisposableStore>());
 	private mouseUpTimeout: any;
 	private keybindingLabel: string | undefined | null;
 
@@ -213,14 +219,15 @@ export class CompoisteBarActionViewItem extends BaseActionViewItem {
 
 		// Badge
 		if (this.badgeContent) {
-			const badgeFg = colors.badgeForeground ?? theme.getColor(badgeForeground);
-			const badgeBg = colors.badgeBackground ?? theme.getColor(badgeBackground);
-			const contrastBorderColor = theme.getColor(contrastBorder);
+			const badgeStyles = this.getActivity()?.badge.getColors(theme);
+			const badgeFg = badgeStyles?.badgeForeground ?? colors.badgeForeground ?? theme.getColor(badgeForeground);
+			const badgeBg = badgeStyles?.badgeBackground ?? colors.badgeBackground ?? theme.getColor(badgeBackground);
+			const contrastBorderColor = badgeStyles?.badgeBorder ?? theme.getColor(contrastBorder);
 
 			this.badgeContent.style.color = badgeFg ? badgeFg.toString() : '';
 			this.badgeContent.style.backgroundColor = badgeBg ? badgeBg.toString() : '';
 
-			this.badgeContent.style.borderStyle = contrastBorderColor ? 'solid' : '';
+			this.badgeContent.style.borderStyle = contrastBorderColor && !this.options.compact ? 'solid' : '';
 			this.badgeContent.style.borderWidth = contrastBorderColor ? '1px' : '';
 			this.badgeContent.style.borderColor = contrastBorderColor ? contrastBorderColor.toString() : '';
 		}
@@ -284,15 +291,21 @@ export class CompoisteBarActionViewItem extends BaseActionViewItem {
 		this.updateStyles();
 	}
 
+	private getActivity(): IActivity | undefined {
+		if (this._action instanceof CompositeBarAction) {
+			return this._action.activity;
+		}
+		return undefined;
+	}
+
 	protected updateActivity(): void {
-		const action = this.action;
-		if (!this.badge || !this.badgeContent || !(action instanceof CompositeBarAction)) {
+		if (!this.badge || !this.badgeContent || !(this._action instanceof CompositeBarAction)) {
 			return;
 		}
 
-		const activity = action.activity;
+		const activity = this.getActivity();
 
-		this.badgeDisposable.clear();
+		this.badgeDisposable.value = new DisposableStore();
 
 		clearNode(this.badgeContent);
 		hide(this.badge);
@@ -314,10 +327,6 @@ export class CompoisteBarActionViewItem extends BaseActionViewItem {
 				classes.push('progress-badge');
 			}
 
-			else if (this.options.compact) {
-				show(this.badge);
-			}
-
 			// Number
 			else if (badge instanceof NumberBadge) {
 				if (badge.number) {
@@ -331,32 +340,32 @@ export class CompoisteBarActionViewItem extends BaseActionViewItem {
 							number = `${noOfThousands}K`;
 						}
 					}
+					if (this.options.compact && number.length >= 3) {
+						classes.push('compact-content');
+					}
 					this.badgeContent.textContent = number;
 					show(this.badge);
 				}
 			}
 
-			// Text
-			else if (badge instanceof TextBadge) {
-				this.badgeContent.textContent = badge.text;
-				show(this.badge);
-			}
-
 			// Icon
 			else if (badge instanceof IconBadge) {
-				const clazzList = ThemeIcon.asClassNameArray(badge.icon);
-				this.badgeContent.classList.add(...clazzList);
+				classes.push('icon-badge');
+				const badgeContentClassess = ['icon-overlay', ...ThemeIcon.asClassNameArray(badge.icon)];
+				this.badgeContent.classList.add(...badgeContentClassess);
+				this.badgeDisposable.value.add(toDisposable(() => this.badgeContent?.classList.remove(...badgeContentClassess)));
 				show(this.badge);
 			}
 
 			if (classes.length) {
 				this.badge.classList.add(...classes);
-				this.badgeDisposable.value = toDisposable(() => this.badge.classList.remove(...classes));
+				this.badgeDisposable.value.add(toDisposable(() => this.badge.classList.remove(...classes)));
 			}
 
 		}
 
 		this.updateTitle();
+		this.updateStyles();
 	}
 
 	protected override updateLabel(): void {
@@ -406,7 +415,7 @@ export class CompoisteBarActionViewItem extends BaseActionViewItem {
 
 		this.hoverDisposables.add(addDisposableListener(this.container, EventType.MOUSE_OVER, () => {
 			if (!this.showHoverScheduler.isScheduled()) {
-				if (Date.now() - CompoisteBarActionViewItem.hoverLeaveTime < 200) {
+				if (Date.now() - CompositeBarActionViewItem.hoverLeaveTime < 200) {
 					this.showHover(true);
 				} else {
 					this.showHoverScheduler.schedule(this.configurationService.getValue<number>('workbench.hover.delay'));
@@ -416,7 +425,7 @@ export class CompoisteBarActionViewItem extends BaseActionViewItem {
 
 		this.hoverDisposables.add(addDisposableListener(this.container, EventType.MOUSE_LEAVE, e => {
 			if (e.target === this.container) {
-				CompoisteBarActionViewItem.hoverLeaveTime = Date.now();
+				CompositeBarActionViewItem.hoverLeaveTime = Date.now();
 				this.hoverService.hideHover();
 				this.showHoverScheduler.cancel();
 			}
@@ -428,20 +437,26 @@ export class CompoisteBarActionViewItem extends BaseActionViewItem {
 		}));
 	}
 
-	private showHover(skipFadeInAnimation: boolean = false): void {
+	showHover(skipFadeInAnimation: boolean = false): void {
 		if (this.lastHover && !this.lastHover.isDisposed) {
 			return;
 		}
 
-		const hoverPosition = this.options.hoverOptions!.position();
+		const hoverPosition = this.options.hoverOptions.position();
 		this.lastHover = this.hoverService.showHover({
 			target: this.container,
-			hoverPosition,
 			content: this.computeTitle(),
-			showPointer: true,
-			compact: true,
-			hideOnKeyDown: true,
-			skipFadeInAnimation,
+			position: {
+				hoverPosition,
+			},
+			persistence: {
+				hideOnKeyDown: true,
+			},
+			appearance: {
+				showPointer: true,
+				compact: true,
+				skipFadeInAnimation,
+			}
 		});
 	}
 
@@ -473,9 +488,7 @@ export class CompositeOverflowActivityAction extends CompositeBarAction {
 	}
 }
 
-export class CompositeOverflowActivityActionViewItem extends CompoisteBarActionViewItem {
-
-	private actions: IAction[] = [];
+export class CompositeOverflowActivityActionViewItem extends CompositeBarActionViewItem {
 
 	constructor(
 		action: CompositeBarAction,
@@ -495,17 +508,10 @@ export class CompositeOverflowActivityActionViewItem extends CompoisteBarActionV
 	}
 
 	showMenu(): void {
-		if (this.actions) {
-			disposeIfDisposable(this.actions);
-		}
-
-		this.actions = this.getActions();
-
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => this.container,
-			getActions: () => this.actions,
+			getActions: () => this.getActions(),
 			getCheckedActionsRepresentation: () => 'radio',
-			onHide: () => disposeIfDisposable(this.actions)
 		});
 	}
 
@@ -518,8 +524,6 @@ export class CompositeOverflowActivityActionViewItem extends CompoisteBarActionV
 			let suffix: string | number | undefined;
 			if (badge instanceof NumberBadge) {
 				suffix = badge.number;
-			} else if (badge instanceof TextBadge) {
-				suffix = badge.text;
 			}
 
 			if (suffix) {
@@ -530,14 +534,6 @@ export class CompositeOverflowActivityActionViewItem extends CompoisteBarActionV
 
 			return action;
 		});
-	}
-
-	override dispose(): void {
-		super.dispose();
-
-		if (this.actions) {
-			this.actions = disposeIfDisposable(this.actions);
-		}
 	}
 }
 
@@ -554,7 +550,7 @@ class ManageExtensionAction extends Action {
 	}
 }
 
-export class CompositeActionViewItem extends CompoisteBarActionViewItem {
+export class CompositeActionViewItem extends CompositeBarActionViewItem {
 
 	private static manageExtensionAction: ManageExtensionAction;
 
@@ -698,8 +694,10 @@ export class CompositeActionViewItem extends CompoisteBarActionViewItem {
 		if (isPinned) {
 			this.toggleCompositePinnedAction.label = localize('hide', "Hide '{0}'", this.compositeBarActionItem.name);
 			this.toggleCompositePinnedAction.checked = false;
+			this.toggleCompositePinnedAction.enabled = this.compositeBar.getPinnedCompositeIds().length > 1;
 		} else {
 			this.toggleCompositePinnedAction.label = localize('keep', "Keep '{0}'", this.compositeBarActionItem.name);
+			this.toggleCompositePinnedAction.enabled = true;
 		}
 
 		const isBadgeEnabled = this.compositeBar.areBadgesEnabled(this.compositeBarActionItem.id);
@@ -731,12 +729,12 @@ export class CompositeActionViewItem extends CompoisteBarActionViewItem {
 	protected override updateChecked(): void {
 		if (this.action.checked) {
 			this.container.classList.add('checked');
-			this.container.setAttribute('aria-label', this.container.title);
+			this.container.setAttribute('aria-label', this.getTooltip() ?? this.container.title);
 			this.container.setAttribute('aria-expanded', 'true');
 			this.container.setAttribute('aria-selected', 'true');
 		} else {
 			this.container.classList.remove('checked');
-			this.container.setAttribute('aria-label', this.container.title);
+			this.container.setAttribute('aria-label', this.getTooltip() ?? this.container.title);
 			this.container.setAttribute('aria-expanded', 'false');
 			this.container.setAttribute('aria-selected', 'false');
 		}
