@@ -135,8 +135,8 @@
     "vsce": "1.48.0",
     "vscode-debugprotocol": "1.36.0",
     "vscode-nls-dev": "^3.3.1",
-    "webpack": "^4.16.5",
-    "webpack-stream": "^5.1.1"
+    "webpack": "^5.0.0",
+    "webpack-stream": "^7.0.0"
   },
   "repository": {
     "type": "git",
