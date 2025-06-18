@@ -758,6 +758,6 @@
   },
   "devDependencies": {
     "@types/node": "^10.14.8",
-    "mocha": "^5.2.0"
+    "mocha": "^11.0.1"
   }
 }
