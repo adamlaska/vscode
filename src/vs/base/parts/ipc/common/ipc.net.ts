@@ -1170,6 +1170,39 @@ export class PersistentProtocol implements IMessagePassingProtocol {
 		}, minimumTimeUntilTimeout);
 	}
 
+	/**
+	 * Called after sending a keepalive. Both sides of this protocol send
+	 * keepalives every KeepAliveSendTime (5s), so receiving no data for
+	 * TimeoutTime (20s) means the connection is dead. This catches silent
+	 * connection deaths that _recvAckCheck cannot detect because there are
+	 * no unacknowledged regular messages.
+	 */
+	private _keepAliveTimeoutCheck(): void {
+		if (this._isReconnecting) {
+			return;
+		}
+
+		const now = Date.now();
+		const timeSinceLastReceivedSomeData = now - this._socketReader.lastReadTime;
+		const timeSinceLastTimeout = now - this._lastSocketTimeoutTime;
+
+		if (
+			timeSinceLastReceivedSomeData >= ProtocolConstants.TimeoutTime
+			&& timeSinceLastTimeout >= ProtocolConstants.TimeoutTime
+		) {
+			// But this might be caused by the event loop being busy and failing to read messages
+			if (!this._loadEstimator.hasHighLoad()) {
+				this._lastSocketTimeoutTime = now;
+				const oldestUnacknowledgedMsg = this._outgoingUnackMsg.peek();
+				this._onSocketTimeout.fire({
+					unacknowledgedMsgCount: this._outgoingUnackMsg.length(),
+					timeSinceOldestUnacknowledgedMsg: oldestUnacknowledgedMsg ? now - oldestUnacknowledgedMsg.writtenTime : 0,
+					timeSinceLastReceivedSomeData
+				});
+			}
+		}
+	}
+
 	private _sendAck(): void {
 		if (this._incomingMsgId <= this._incomingAckId) {
 			// nothink to acknowledge
@@ -1185,5 +1218,6 @@ export class PersistentProtocol implements IMessagePassingProtocol {
 		this._incomingAckId = this._incomingMsgId;
 		const msg = new ProtocolMessage(ProtocolMessageType.KeepAlive, 0, this._incomingAckId, getEmptyBuffer());
 		this._socketWriter.write(msg);
+		this._keepAliveTimeoutCheck();
 	}
 }

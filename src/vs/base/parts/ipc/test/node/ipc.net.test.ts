@@ -506,6 +506,56 @@ suite('PersistentProtocol reconnection', () => {
 		);
 	});
 
+	test('keepalive detects dead connection when no regular messages are pending', async () => {
+		await runWithFakedTimers(
+			{
+				useFakeTimers: true,
+				useSetImmediate: true,
+				maxTaskCount: 1000
+			},
+			async () => {
+
+				const loadEstimator: ILoadEstimator = {
+					hasHighLoad: () => false
+				};
+				const ether = new Ether();
+				const aSocket = new NodeSocket(ether.a);
+				const a = new PersistentProtocol({ socket: aSocket, loadEstimator });
+				const aMessages = new MessageStream(a);
+				const bSocket = new NodeSocket(ether.b);
+				const b = new PersistentProtocol({ socket: bSocket, loadEstimator });
+				const bMessages = new MessageStream(b);
+
+				// exchange a message so both sides are in a good state
+				a.send(VSBuffer.fromString('a1'));
+				const a1 = await bMessages.waitForOne();
+				assert.strictEqual(a1.toString(), 'a1');
+
+				// wait for ack to arrive
+				await timeout(ProtocolConstants.AcknowledgeTime * 2);
+
+				// confirm no unacknowledged messages
+				assert.strictEqual(a.unacknowledgedCount, 0);
+
+				// now kill b's ability to send anything (simulates dead connection
+				// where the remote side's keepalives stop arriving)
+				b.pauseSocketWriting();
+
+				// wait for timeout to be detected via keepalive
+				const socketTimeoutEvent = await Event.toPromise(a.onSocketTimeout);
+
+				assert.ok(socketTimeoutEvent.timeSinceLastReceivedSomeData >= ProtocolConstants.TimeoutTime);
+				// no regular messages were pending
+				assert.strictEqual(socketTimeoutEvent.unacknowledgedMsgCount, 0);
+
+				aMessages.dispose();
+				bMessages.dispose();
+				a.dispose();
+				b.dispose();
+			}
+		);
+	});
+
 	test('writing can be paused', async () => {
 		await runWithFakedTimers({ useFakeTimers: true, maxTaskCount: 100 }, async () => {
 			const loadEstimator: ILoadEstimator = {
