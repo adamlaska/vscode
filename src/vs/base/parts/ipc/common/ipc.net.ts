@@ -136,9 +136,15 @@ export interface WebSocketCloseEvent {
 
 export type SocketCloseEvent = NodeSocketCloseEvent | WebSocketCloseEvent | undefined;
 
+export const enum SocketTimeoutReason {
+	UNACKNOWLEDGED_MESSAGE = 'unacknowledgedMessage',
+	KEEP_ALIVE = 'keepAlive',
+}
+
 export interface SocketTimeoutEvent {
+	readonly reason: SocketTimeoutReason;
 	readonly unacknowledgedMsgCount: number;
-	readonly timeSinceOldestUnacknowledgedMsg: number;
+	readonly timeSinceOldestUnacknowledgedMsg?: number;
 	readonly timeSinceLastReceivedSomeData: number;
 }
 
@@ -1149,6 +1155,7 @@ export class PersistentProtocol implements IMessagePassingProtocol {
 				// Trash the socket
 				this._lastSocketTimeoutTime = Date.now();
 				this._onSocketTimeout.fire({
+					reason: SocketTimeoutReason.UNACKNOWLEDGED_MESSAGE,
 					unacknowledgedMsgCount: this._outgoingUnackMsg.length(),
 					timeSinceOldestUnacknowledgedMsg,
 					timeSinceLastReceivedSomeData
@@ -1193,10 +1200,12 @@ export class PersistentProtocol implements IMessagePassingProtocol {
 			// But this might be caused by the event loop being busy and failing to read messages
 			if (!this._loadEstimator.hasHighLoad()) {
 				this._lastSocketTimeoutTime = now;
+				const unacknowledgedMsgCount = this._outgoingUnackMsg.length();
 				const oldestUnacknowledgedMsg = this._outgoingUnackMsg.peek();
 				this._onSocketTimeout.fire({
-					unacknowledgedMsgCount: this._outgoingUnackMsg.length(),
-					timeSinceOldestUnacknowledgedMsg: oldestUnacknowledgedMsg ? now - oldestUnacknowledgedMsg.writtenTime : 0,
+					reason: SocketTimeoutReason.KEEP_ALIVE,
+					unacknowledgedMsgCount,
+					timeSinceOldestUnacknowledgedMsg: oldestUnacknowledgedMsg ? now - oldestUnacknowledgedMsg.writtenTime : undefined,
 					timeSinceLastReceivedSomeData
 				});
 			}

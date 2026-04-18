@@ -12,7 +12,7 @@ import { Barrier, timeout } from '../../../../common/async.js';
 import { VSBuffer } from '../../../../common/buffer.js';
 import { Emitter, Event } from '../../../../common/event.js';
 import { Disposable, DisposableStore, toDisposable } from '../../../../common/lifecycle.js';
-import { ILoadEstimator, PersistentProtocol, Protocol, ProtocolConstants, SocketCloseEvent, SocketDiagnosticsEventType } from '../../common/ipc.net.js';
+import { ILoadEstimator, PersistentProtocol, Protocol, ProtocolConstants, SocketCloseEvent, SocketDiagnosticsEventType, SocketTimeoutReason } from '../../common/ipc.net.js';
 import { createRandomIPCHandle, createStaticIPCHandle, NodeSocket, WebSocketNodeSocket } from '../../node/ipc.net.js';
 import { flakySuite } from '../../../../test/common/testUtils.js';
 import { runWithFakedTimers } from '../../../../test/common/timeTravelScheduler.js';
@@ -537,16 +537,18 @@ suite('PersistentProtocol reconnection', () => {
 				// confirm no unacknowledged messages
 				assert.strictEqual(a.unacknowledgedCount, 0);
 
-				// now kill b's ability to send anything (simulates dead connection
+				// now kill b's ability to send anything (simulates a dead connection
 				// where the remote side's keepalives stop arriving)
 				b.pauseSocketWriting();
 
 				// wait for timeout to be detected via keepalive
 				const socketTimeoutEvent = await Event.toPromise(a.onSocketTimeout);
 
+				assert.strictEqual(socketTimeoutEvent.reason, SocketTimeoutReason.KEEP_ALIVE);
 				assert.ok(socketTimeoutEvent.timeSinceLastReceivedSomeData >= ProtocolConstants.TimeoutTime);
 				// no regular messages were pending
 				assert.strictEqual(socketTimeoutEvent.unacknowledgedMsgCount, 0);
+				assert.strictEqual(socketTimeoutEvent.timeSinceOldestUnacknowledgedMsg, undefined);
 
 				aMessages.dispose();
 				bMessages.dispose();
