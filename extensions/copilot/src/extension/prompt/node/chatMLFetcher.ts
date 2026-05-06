@@ -32,7 +32,7 @@ import { IOTelService, ISpanHandle, SpanKind, SpanStatusCode } from '../../../pl
 import { IRequestLogger } from '../../../platform/requestLogger/common/requestLogger';
 import { getCurrentCapturingToken } from '../../../platform/requestLogger/node/requestLogger';
 import { IExperimentationService } from '../../../platform/telemetry/common/nullExperimentationService';
-import { ITelemetryService, TelemetryProperties } from '../../../platform/telemetry/common/telemetry';
+import { ITelemetryService, TelemetryProperties, multiplexProperties } from '../../../platform/telemetry/common/telemetry';
 import { TelemetryData } from '../../../platform/telemetry/common/telemetryData';
 import { isEncryptedThinkingDelta } from '../../../platform/thinking/common/thinking';
 import { calculateLineRepetitionStats, isRepetitive } from '../../../util/common/anomalyDetection';
@@ -1146,11 +1146,11 @@ export class ChatMLFetcherImpl extends AbstractChatMLFetcher {
 		this._telemetryService.sendGHTelemetryEvent('request.sent', telemetryData.properties, telemetryData.measurements);
 
 		if (request.tools) {
-			this._telemetryService.sendEnhancedGHTelemetryEvent('request.options.tools', {
+			this._telemetryService.sendEnhancedGHTelemetryEvent('request.options.tools', multiplexProperties({
 				headerRequestId: ourRequestId,
 				conversationId,
 				messagesJson: JSON.stringify(request.tools),
-			}, telemetryData.measurements);
+			}), telemetryData.measurements);
 		}
 
 		const requestStart = Date.now();
@@ -1426,11 +1426,11 @@ export class ChatMLFetcherImpl extends AbstractChatMLFetcher {
 		this._telemetryService.sendGHTelemetryEvent('request.sent', telemetryData.properties, telemetryData.measurements);
 
 		if (request.tools) {
-			this._telemetryService.sendEnhancedGHTelemetryEvent('request.options.tools', {
+			this._telemetryService.sendEnhancedGHTelemetryEvent('request.options.tools', multiplexProperties({
 				headerRequestId: ourRequestId,
 				conversationId: telemetryProperties?.conversationId,
 				messagesJson: JSON.stringify(request.tools),
-			}, telemetryData.measurements);
+			}), telemetryData.measurements);
 		}
 
 		const requestStart = Date.now();
