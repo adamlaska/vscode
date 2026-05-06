@@ -1145,6 +1145,14 @@ export class ChatMLFetcherImpl extends AbstractChatMLFetcher {
 		}
 		this._telemetryService.sendGHTelemetryEvent('request.sent', telemetryData.properties, telemetryData.measurements);
 
+		if (request.tools) {
+			this._telemetryService.sendEnhancedGHTelemetryEvent('request.options.tools', {
+				headerRequestId: ourRequestId,
+				conversationId,
+				messagesJson: JSON.stringify(request.tools),
+			}, telemetryData.measurements);
+		}
+
 		const requestStart = Date.now();
 		const handle = connection.sendRequest(request, { userInitiated: !!userInitiatedRequest, turnId, requestId: ourRequestId, model: chatEndpointInfo.model, countTokens, tokenCountMax: chatEndpointInfo.maxOutputTokens, modelMaxPromptTokens: chatEndpointInfo.modelMaxPromptTokens, summarizedAtRoundId, modeChanged }, cancellationToken);
 
@@ -1416,6 +1424,14 @@ export class ChatMLFetcherImpl extends AbstractChatMLFetcher {
 		telemetryData.properties['headerRequestId'] = ourRequestId;
 
 		this._telemetryService.sendGHTelemetryEvent('request.sent', telemetryData.properties, telemetryData.measurements);
+
+		if (request.tools) {
+			this._telemetryService.sendEnhancedGHTelemetryEvent('request.options.tools', {
+				headerRequestId: ourRequestId,
+				conversationId: telemetryProperties?.conversationId,
+				messagesJson: JSON.stringify(request.tools),
+			}, telemetryData.measurements);
+		}
 
 		const requestStart = Date.now();
 		const intent = locationToIntent(location);
