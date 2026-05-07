@@ -115,8 +115,6 @@ suite('ExtensionManifestPropertiesService - SessionsWindowSupport', () => {
 	let testConfigurationService: TestConfigurationService;
 	let testObject: ExtensionManifestPropertiesService;
 
-	ensureNoDisposablesAreLeakedInTestSuite();
-
 	setup(() => {
 		disposables = new DisposableStore();
 		testConfigurationService = new TestConfigurationService();
@@ -126,6 +124,8 @@ suite('ExtensionManifestPropertiesService - SessionsWindowSupport', () => {
 		testObject.dispose();
 		disposables.dispose();
 	});
+
+	ensureNoDisposablesAreLeakedInTestSuite();
 
 	function getExtensionManifest(properties: Partial<IExtensionManifest> = {}): IExtensionManifest {
 		return Object.create({ name: 'a', publisher: 'pub', version: '1.0.0', ...properties }) as IExtensionManifest;
