@@ -543,6 +543,7 @@
 				"icon": "$(diff)",
 				"userDescription": "%copilot.tools.changes.description%",
 				"modelDescription": "Get git diffs of current file changes in a git repository. Don't forget that you can use run_in_terminal to run git commands in a terminal as well.",
+				"when": "config.github.copilot.chat.getChangedFilesTool.enabled",
 				"tags": [
 					"vscode_codesearch"
 				],
@@ -4443,6 +4444,16 @@
 						"tags": [
 							"advanced",
 							"experimental"
+						]
+					},
+					"github.copilot.chat.getChangedFilesTool.enabled": {
+						"type": "boolean",
+						"default": false,
+						"markdownDescription": "%github.copilot.config.getChangedFilesTool.enabled%",
+						"tags": [
+							"advanced",
+							"experimental",
+							"onExp"
 						]
 					},
 					"github.copilot.chat.executionSubagent.enabled": {
