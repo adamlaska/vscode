@@ -15,7 +15,7 @@ import type { CompletionsParams, CompletionsResult, CreateTerminalParams, Resolv
 import { ProtectedResourceMetadata, type ConfigSchema, type FileEdit, type ModelSelection, type SessionActiveClient, type ToolCallPendingConfirmationState, type ToolDefinition } from './state/protocol/state.js';
 import type { ActionEnvelope, INotification, IRootConfigChangedAction, SessionAction, TerminalAction } from './state/sessionActions.js';
 import type { ResourceCopyParams, ResourceCopyResult, ResourceDeleteParams, ResourceDeleteResult, ResourceListResult, ResourceMoveParams, ResourceMoveResult, ResourceReadResult, ResourceWriteParams, ResourceWriteResult, IStateSnapshot } from './state/sessionProtocol.js';
-import { AttachmentType, ComponentToState, SessionInputResponseKind, SessionStatus, StateComponents, type CustomizationRef, type PendingMessage, type RootState, type SessionCustomization, type SessionInputAnswer, type SessionMeta, type ToolCallResult, type Turn, type PolicyState } from './state/sessionState.js';
+import { ComponentToState, SessionInputResponseKind, SessionStatus, StateComponents, type CustomizationRef, type PendingMessage, type RootState, type SessionCustomization, type SessionInputAnswer, type SessionMeta, type ToolCallResult, type Turn, type PolicyState } from './state/sessionState.js';
 
 // IPC contract between the renderer and the agent host utility process.
 // Defines all serializable event types, the IAgent provider interface,
@@ -245,13 +245,17 @@ export interface IAgentSessionConfigCompletionsParams extends IAgentResolveSessi
 	readonly query?: string;
 }
 
+export const enum AgentAttachmentType {
+	File = 'file',
+	Directory = 'directory',
+	Selection = 'selection',
+}
+
 /** Serializable attachment passed alongside a message to the agent host. */
 export interface IAgentAttachment {
-	readonly type: AttachmentType;
+	readonly type: AgentAttachmentType;
 	readonly uri: URI;
 	readonly displayName?: string;
-	/** For selections: the selected text. */
-	readonly text?: string;
 	/** For selections: line/character range. */
 	readonly selection?: {
 		readonly start: { readonly line: number; readonly character: number };
