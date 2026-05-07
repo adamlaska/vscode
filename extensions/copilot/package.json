@@ -4690,7 +4690,7 @@
 					},
 					"github.copilot.chat.cli.autoModel.enabled": {
 						"type": "boolean",
-						"default": true,
+						"default": false,
 						"markdownDescription": "%github.copilot.config.cli.autoModel.enabled%",
 						"tags": [
 							"advanced"
